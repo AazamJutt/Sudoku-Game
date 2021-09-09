@@ -7,7 +7,7 @@ public class SudokuTextField extends JTextField {
         super();
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setBackground(Color.DARK_GRAY);
-        setForeground(Color.GREEN);
+        setForeground(Color.WHITE);
         setFont(new Font("Courier",Font.BOLD,20));
         setHorizontalAlignment(SwingConstants.CENTER);
     }
