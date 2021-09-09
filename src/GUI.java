@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class GUI {
     JFrame screen;
@@ -21,8 +22,6 @@ public class GUI {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 fields[i][j] = new SudokuTextField();
-                fields[i][j].setName(i+","+j);
-                fields[i][j].addKeyListener(controller);
                 fields[i][j].setBounds((i * 50), (j * 50), 50, 50);
                 screen.add(fields[i][j]);
             }
@@ -46,15 +45,7 @@ public class GUI {
     }
 
     public static void main(String[] args) {
-        // Doing this because Swing is not thread safe.
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                SudokuBoard s = new SudokuBoard(9, 20);
-                GUI g = new GUI(s);
-            }
-        });
+        SudokuBoard s = new SudokuBoard(9, 20);
+        GUI g = new GUI(s);
     }
 }

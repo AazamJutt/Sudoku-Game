@@ -132,15 +132,15 @@ public class SudokuBoard {
                 board[i][j] = 0;
             }
         }
+        for (int i = 0; i< size; i++){
+            for (int j = 0; j< size; j++){
+                System.out.print(board[i][j]+"\t");
+            }
+            System.out.println();
+        }
+        System.out.println("\n\n");
     }
-    public boolean isCorrectValue(int i,int j,int n){
-        if(solution[i][j]==n)
-            return true;
-        return false;
-    }
-    public int getCorrectValue(int i,int j){
-        return solution[i][j];
-    }
+
     // to print the grid (numbers are from 0 to size-1)
     // but for regular user we will display from 1 to size
     public String toString() {
