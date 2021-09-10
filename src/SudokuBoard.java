@@ -10,6 +10,7 @@ public class SudokuBoard {
     private int[] row;
     // random and aray list
     private Random ran;
+    int SRN; // square root of N
     private ArrayList<Integer> al;
     // number of row and column
     private int size;
@@ -27,76 +28,63 @@ public class SudokuBoard {
         // random number generator
         ran = new Random();
         // arraylist that will contain the possible values for every case in the grid
-        al = new ArrayList<Integer>();
+        al = new ArrayList<Integer>();// Compute square root of N
+        Double SRNd = Math.sqrt(size);
+        SRN = SRNd.intValue();
+        fillValues();
+    }
 
-        // now let's fill the grid row by row
-        for (int i = 0; i < size; i++)
-            fillRow(i);
+    // Sudoku Generator
+    public void fillValues()
+    {
+        // Fill the diagonal of SRN x SRN matrices
+        fillDiagonal();
+
+        // Fill remaining blocks
+        fillRemaining(0, SRN);
+
+        // Remove Randomly K digits to make game
         removeKDigits();
     }
 
-    // will call genRow() to fill row
-    // then will copy that row into the grid... the main reason for this method is to display debug info
-    private void fillRow(int n) {
-        genRow(n);
-        for (int i = 0; i < size; i++) {
-            solution[n][i] = row[i];
-        }
+    // Fill the diagonal SRN number of SRN x SRN matrices
+    void fillDiagonal()
+    {
 
+        for (int i = 0; i<size; i=i+SRN)
+
+            // for diagonal box, start coordinates->i==j
+            fillBox(i, i);
     }
 
-    // fill the instance variable row with a new row
-    private void genRow(int n) {
-        // will be used to flag which values are available or not
-        boolean[] used = new boolean[size];
-        // it might take more than one trial to fill a row
-        // imagine the following case
-        // 1 2 3 4
-        // 2 3 4 1
-        // now if I add for the third row
-        // 3 then
-        // 3 4 then
-        // 3 4 2 then
-        // the only possible case for the last column is 1 but 1 is invalid in the last column
-        // so we'll have to try again
-        boolean conflict = true; // assume we have conflict to enter the while loop
-        while (conflict) {
-            conflict = false; // assume it worked
-            // loop for each column of the row
-            for (int i = 0; i < size; i++) {
-                // initialized that all number form 0 to size are not used and are available
-                for (int j = 0; j < size; j++)
-                    used[j] = false;
-                // i cannot use any previous number used on that row so I set to true
-                // all the already allocated numbers in that row
-                for (int j = 0; j < i; j++)
-                    used[row[j]] = true;
-                // i cannot use neither the numbers used in the same column in the previous rows already filled
-                for (int j = 0; j < n; j++)
-                    used[solution[j][i]] = true;
-                // fill the array list with the possible values
-                al.clear(); // empty the arraylist
-                for (int j = 0; j < size; j++) { // fill it with the permitted values
-                    if (!used[j]) { // if number not used
-                        al.add(j); // add it to arraylist
-                    }
+    // Returns false if given 3 x 3 block contains num.
+    boolean unUsedInBox(int rowStart, int colStart, int num)
+    {
+        for (int i = 0; i<SRN; i++)
+            for (int j = 0; j<SRN; j++)
+                if (solution[rowStart+i][colStart+j]==num)
+                    return false;
+
+        return true;
+    }
+
+    // Fill a 3 x 3 matrix.
+    void fillBox(int row,int col)
+    {
+        int num;
+        for (int i=0; i<SRN; i++)
+        {
+            for (int j=0; j<SRN; j++)
+            {
+                do
+                {
+                    num = randomGenerator(size);
                 }
-                // now case explained in comment for variable conflict
-                // in that case no number would have been entered in the arraylist so its size would be 0
-                if (al.size() == 0) {
-                    // if it is the case flag that there is a conflict
-                    conflict = true;
-                    break; // no need to continue the loop
-                }
-                // pickup a number randomly from the arraylist
-                row[i] = al.remove(ran.nextInt(al.size()));
+                while (!unUsedInBox(row, col, num));
+
+                solution[row+i][col+j] = num;
             }
         }
-    }
-
-    // to retreive the grid
-    public int[][] getGrid() {
-        return solution;
     }
 
     // Random generator
@@ -104,41 +92,151 @@ public class SudokuBoard {
     {
         return (int) Math.floor((Math.random()*num+1));
     }
+
+    // Check if safe to put in cell
+    boolean CheckIfSafe(int i,int j,int num)
+    {
+        return (unUsedInRow(i, num) &&
+                unUsedInCol(j, num) &&
+                unUsedInBox(i-i%SRN, j-j%SRN, num));
+    }
+
+    // check in the row for existence
+    boolean unUsedInRow(int i,int num)
+    {
+        for (int j = 0; j<size; j++)
+            if (solution[i][j] == num)
+                return false;
+        return true;
+    }
+
+    // check in the row for existence
+    boolean unUsedInCol(int j,int num)
+    {
+        for (int i = 0; i<size; i++)
+            if (solution[i][j] == num)
+                return false;
+        return true;
+    }
+
+    // A recursive function to fill remaining
+    // matrix
+    boolean fillRemaining(int i, int j)
+    {
+        //  System.out.println(i+" "+j);
+        if (j>=size && i<size-1)
+        {
+            i = i + 1;
+            j = 0;
+        }
+        if (i>=size && j>=size)
+            return true;
+
+        if (i < SRN)
+        {
+            if (j < SRN)
+                j = SRN;
+        }
+        else if (i < size-SRN)
+        {
+            if (j==(int)(i/SRN)*SRN)
+                j =  j + SRN;
+        }
+        else
+        {
+            if (j == size-SRN)
+            {
+                i = i + 1;
+                j = 0;
+                if (i>=size)
+                    return true;
+            }
+        }
+
+        for (int num = 1; num<=size; num++)
+        {
+            if (CheckIfSafe(i, j, num))
+            {
+                solution[i][j] = num;
+                if (fillRemaining(i, j+1))
+                    return true;
+
+                solution[i][j] = 0;
+            }
+        }
+        return false;
+    }
+
+
+    boolean isValid(int row, int col, int num) {
+
+        for (int i = 0; i < 9; i++) {
+            if (solution[row][i] == num) {
+                return false;
+            }
+            if (solution[i][col] == num) {
+                return false;
+            }
+        }
+
+        int gridRow = row - (row % 3);
+        int gridColumn = col - (col % 3);
+        for (int p = gridRow; p < gridRow + 3; p++) {
+            for (int q = gridColumn; q < gridColumn + 3; q++) {
+                if (solution[p][q] == num) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // to retreive the grid
+    public int[][] getGrid() {
+        return solution;
+    }
     // Remove the K no. of digits to
     // complete game
-    public void removeKDigits()
-    {
-        for (int i = 0; i< size; i++){
-            for (int j = 0; j< size; j++){
+    public void removeKDigits() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 board[i][j] = solution[i][j];
             }
         }
         int count = K;
-        while (count != 0)
-        {
-            int cellId = randomGenerator(size*size)-1;
+        while (count != 0) {
+            int cellId = randomGenerator(size * size) - 1;
 
             // System.out.println(cellId);
             // extract coordinates i  and j
-            int i = (cellId/size);
-            int j = cellId%9;
+            int i = (cellId / size);
+            int j = cellId % 9;
             if (j != 0)
                 j = j - 1;
 
             // System.out.println(i+" "+j);
-            if (board[i][j] != 0)
-            {
+            if (board[i][j] != 0) {
                 count--;
                 board[i][j] = 0;
             }
         }
-        for (int i = 0; i< size; i++){
-            for (int j = 0; j< size; j++){
-                System.out.print(board[i][j]+"\t");
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                System.out.print(board[i][j] + "\t");
             }
             System.out.println();
         }
         System.out.println("\n\n");
+    }
+
+    public boolean isCorrectValue(int i, int j, int n) {
+        if (solution[i][j] == n)
+            return true;
+        return false;
+    }
+
+    public int getCorrectValue(int i, int j) {
+        return solution[i][j];
     }
 
     // to print the grid (numbers are from 0 to size-1)
@@ -156,7 +254,7 @@ public class SudokuBoard {
 
 
     public static void main(String[] arg) {
-        SudokuBoard s = new SudokuBoard(9,20);
+        SudokuBoard s = new SudokuBoard(9, 20);
         System.out.print(s);
     }
 }

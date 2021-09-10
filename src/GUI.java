@@ -22,6 +22,8 @@ public class GUI {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 fields[i][j] = new SudokuTextField();
+                fields[i][j].setName(i+","+j);
+                fields[i][j].addKeyListener(controller);
                 fields[i][j].setBounds((i * 50), (j * 50), 50, 50);
                 screen.add(fields[i][j]);
             }
@@ -38,14 +40,21 @@ public class GUI {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if(game.board[i][j]!=0)
-                    fields[i][j].setEnabled(false);
-                fields[i][j].setText(Integer.toString(game.board[i][j]));
+                    fields[j][i].setEnabled(false);
+                    fields[j][i].setText(Integer.toString(game.board[i][j]));
+                if((i+1)%3==0)
+                    fields[j][i].setBorder(BorderFactory.createMatteBorder(1, 1, 3, 1, Color.BLACK));
+                if((j+1)%3==0)
+                    fields[j][i].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 3, Color.BLACK));
+                if((i+1)%3==0 && (j+1)%3==0)
+                    fields[j][i].setBorder(BorderFactory.createMatteBorder(1, 1, 3, 3, Color.BLACK));
             }
         }
     }
 
     public static void main(String[] args) {
-        SudokuBoard s = new SudokuBoard(9, 20);
+        SudokuBoard s = new SudokuBoard(9, 22);
+        System.out.println(s);
         GUI g = new GUI(s);
     }
 }
