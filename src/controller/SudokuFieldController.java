@@ -1,12 +1,16 @@
+package controller;
+
+import model.SudokuBoard;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class GameController implements KeyListener {
+public class SudokuFieldController implements KeyListener {
     SudokuBoard game;
 
-    public GameController(SudokuBoard game) {
+    public SudokuFieldController(SudokuBoard game) {
         this.game = game;
     }
 

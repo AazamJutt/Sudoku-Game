@@ -1,23 +1,31 @@
+package view;
+
+import controller.SolveBtnController;
+import controller.SudokuFieldController;
+import model.SudokuBoard;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class GUI {
     JFrame screen;
     SudokuBoard game;
     SudokuTextField[][] fields;
-    GameController controller;
+    SudokuFieldController controller;
+    JButton solveBtn;
+    JPanel controlPanel;
     static int N = 9;
 
     public GUI(SudokuBoard g) {
         this.game = g;
-        controller = new GameController(game);
+        controller = new SudokuFieldController(game);
         initGUI();
     }
 
     public void initGUI() {
         this.screen = new JFrame("Sudoku");
+        solveBtn = new JButton("Solve");
+        controlPanel = new JPanel();
         fields = new SudokuTextField[N][N];
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -29,7 +37,14 @@ public class GUI {
             }
         }
         setupBoard();
-        screen.setSize(465, 487);//400 width and 500 height
+        controlPanel.setBounds(0,450,450,50);
+        controlPanel.setBackground(Color.DARK_GRAY);
+        solveBtn.setBackground(Color.BLACK);
+        solveBtn.setForeground(Color.WHITE);
+        solveBtn.addActionListener(new SolveBtnController(game,fields));
+        controlPanel.add(solveBtn);
+        screen.add(controlPanel);
+        screen.setSize(465, 525);//400 width and 500 height
         screen.setLocation(450, 150);
         screen.setLayout(null);//using no layout managers
         screen.setVisible(true);//making the frame visible
@@ -54,7 +69,7 @@ public class GUI {
 
     public static void main(String[] args) {
         SudokuBoard s = new SudokuBoard(9, 22);
-        System.out.println(s);
+        System.out.println("Solution:\n"+s);
         GUI g = new GUI(s);
     }
 }

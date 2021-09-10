@@ -1,3 +1,5 @@
+package model;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -17,7 +19,7 @@ public class SudokuBoard {
     private int K;
 
     // size of the Sudoku grid is received as parameter
-    SudokuBoard(int size, int k) {
+    public SudokuBoard(int size, int k) {
         this.size = size;
         this.K = k;
         // this this the grid that we will fill
@@ -220,13 +222,6 @@ public class SudokuBoard {
                 board[i][j] = 0;
             }
         }
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                System.out.print(board[i][j] + "\t");
-            }
-            System.out.println();
-        }
-        System.out.println("\n\n");
     }
 
     public boolean isCorrectValue(int i, int j, int n) {
@@ -250,11 +245,5 @@ public class SudokuBoard {
             str += "\n"; // end of line
         }
         return str;
-    }
-
-
-    public static void main(String[] arg) {
-        SudokuBoard s = new SudokuBoard(9, 20);
-        System.out.print(s);
     }
 }
